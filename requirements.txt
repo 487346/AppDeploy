@@ -1,0 +1,7 @@
+conda activate tf-jupyter
+pip install polars
+pip install torchviz
+pip install torch torchvision
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+python -m ipykernel install --user --name torch_env --display-name "Python (torch_env)"
+pip install streamlit
