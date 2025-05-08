@@ -66,7 +66,7 @@ if uploaded_image is not None:
 # Footer
 st.write("Made with 💻 by [Your Name]")
 
-    st.write(f'Age Bracket: {age_labels[age_prediction]} (Confidence: {age_probs[0][age_prediction] * 100:.2f}%)')
+st.write(f'Age Bracket: {age_labels[age_prediction]} (Confidence: {age_probs[0][age_prediction] * 100:.2f}%)')
 
 
 
