@@ -58,7 +58,6 @@ class VGG16DualHead(nn.Module):
         self.age_head = nn.Sequential(
             nn.Linear(25088, 512),
             nn.ReLU(),
-            nn.Dropout(0.5),
             nn.Linear(512, num_age_classes)
         )
         
@@ -66,7 +65,6 @@ class VGG16DualHead(nn.Module):
         self.gender_head = nn.Sequential(
             nn.Linear(25088, 512),
             nn.ReLU(),
-            nn.Dropout(0.5),
             nn.Linear(512, num_gender_classes)
         )
 
