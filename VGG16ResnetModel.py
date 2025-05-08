@@ -13,8 +13,8 @@ from torchvision import models
 
 # Define the modified ResNet-50 model with two heads (age and gender)
 class ResNet50DualHead(nn.Module):
-    def _init_(self, num_age_classes=9, num_gender_classes=2): 
-        super(ResNet50DualHead, self)._init_()
+    def __init__(self, num_age_classes=9, num_gender_classes=2): 
+        super(ResNet50DualHead, self).__init__()
         self.base_model = models.resnet50(pretrained=True)
 
         # Freeze base model parameters
