@@ -6,3 +6,4 @@ mdurl
 pygments
 rich
 streamlit
+transformers
