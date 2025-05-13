@@ -15,11 +15,10 @@ import os
 st.set_page_config(page_title='Age and Gender Prediction App', layout='centered')
 st.title('Age and Gender Prediction App')
 
-# Load and preprocess the dataset (replace with your dataset path)
 def load_data():
-    # You should replace these paths with your actual dataset paths
-    train_dir = 'path_to_train_data'
-    validation_dir = 'path_to_validation_data'
+    # Replace these paths with actual paths to your training and validation data
+    train_dir = '/path/to/train/data'
+    validation_dir = '/path/to/validation/data'
     
     # Use ImageDataGenerator for data loading and augmentation
     train_datagen = ImageDataGenerator(rescale=1./255)
