@@ -5,17 +5,11 @@ markdown-it-py
 mdurl
 pygments
 rich
-streamlit
+streamlit==1.0
 transformers
 opencv-python-headless
-Pillow
-numpy
-tensorflow
-deepface
-opencv-python==4.5.3.56
-opencv-python==4.5.3.56
-deepface==0.0.78
-streamlit==1.0
 Pillow==8.3.1
-tensorflow==2.7.0  
-streamlit gender-guesser transformers
+numpy
+tensorflow==2.7.0
+deepface==0.0.78
+gender-guesser
