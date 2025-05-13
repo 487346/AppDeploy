@@ -2,56 +2,54 @@
 # coding: utf-8
 
 # In[ ]:
-import streamlit as st
-from deepface import DeepFace
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import cv2
+import numpy as np
 from PIL import Image
+import torch
+from torchvision import transforms
 
-# Function to predict gender using DeepFace
-def predict_gender(image):
-    # DeepFace can predict gender
-    analysis = DeepFace.analyze(image, actions=['gender'], enforce_detection=False)
-    gender = analysis[0]['dominant_gender']
-    return gender
+app = Flask(__name__)
+CORS(app)
 
-# Function to predict age using DeepFace
-def predict_age(image):
-    # DeepFace can predict age
-    analysis = DeepFace.analyze(image, actions=['age'], enforce_detection=False)
-    age = analysis[0]['age']
-    return age
+# Load your pre-trained model here (e.g., gender and age prediction model)
+model = torch.load('model.pth')
+model.eval()
 
-# Streamlit UI setup
-st.title("Age and Gender Prediction App")
+# Define image transformations
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
 
-# Instruction for the user
-st.write("Please upload an image to predict the age and gender.")
+def predict_image(image):
+    """Predict gender and age from an image."""
+    image = Image.open(image)
+    image = transform(image).unsqueeze(0)
 
-# Upload Image
-uploaded_file = st.file_uploader("Choose an image...", type="jpg")
+    with torch.no_grad():
+        outputs = model(image)
+        gender = 'Male' if outputs[0].item() > 0.5 else 'Female'
+        age_range = '20-30'  # Placeholder: Replace with actual logic
 
-if uploaded_file is not None:
-    # Open the uploaded image
-    image = Image.open(uploaded_file)
+    return gender, age_range
 
-    # Show the uploaded image
-    st.image(image, caption="Uploaded Image.", use_column_width=True)
+@app.route('/predict', methods=['POST'])
+def predict():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image provided'}), 400
+    
+    image = request.files['image']
+    gender, age_range = predict_image(image)
 
-    # Predict gender
-    st.write("Analyzing the image for gender...")
+    return jsonify({
+        'gender': gender,
+        'age_range': age_range
+    })
 
-    # Call the gender prediction function
-    gender = predict_gender(image)
-
-    # Display the gender result
-    st.write(f"Predicted Gender: {gender}")
-
-    # Predict age
-    st.write("Analyzing the image for age...")
-
-    # Call the age prediction function
-    age = predict_age(image)
-
-    # Display the age result
-    st.write(f"Predicted Age: {age} years")
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
 
 # In[ ]:
