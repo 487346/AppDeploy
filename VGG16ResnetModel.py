@@ -43,30 +43,50 @@ def predict_age_bracket(age):
         return age_brackets[8]
 
 # Create a Streamlit app
-def main():
-    st.title('Age and Gender Prediction')
+# Load pre-trained MobileNetV2 model or any other model for age & gender prediction
+model = models.mobilenet_v2(pretrained=True)
+model.eval()
 
-    st.write("This app predicts gender and age brackets based on input. Enter a name and age to get the prediction.")
+# Define a function to preprocess the image for MobileNetV2
+def preprocess_image(image):
+    preprocess = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+    image_tensor = preprocess(image).unsqueeze(0)
+    return image_tensor
 
-    # Input fields
-    name = st.text_input('Enter your name:')
-    age = st.number_input('Enter your age:', min_value=0, max_value=120, step=1)
+# Function to predict age and gender
+def predict_age_and_gender(image):
+    # DeepFace can predict both age and gender
+    analysis = DeepFace.analyze(image, actions=['age', 'gender'], enforce_detection=False)
+    age = analysis[0]['age']
+    gender = analysis[0]['dominant_gender']
+    return age, gender
 
-    if st.button('Predict'):
-        if name:
-            gender_prediction = predict_gender(name)
-            st.write(f"Predicted Gender: {gender_prediction}")
-        else:
-            st.write("Please enter a valid name.")
-        
-        if age is not None:
-            age_prediction = predict_age_bracket(age)
-            st.write(f"Predicted Age Bracket: {age_prediction}")
-        else:
-            st.write("Please enter a valid age.")
-        
-if __name__ == "__main__":
-    main()
+# Streamlit UI setup
+st.title("Age and Gender Prediction App")
 
+# Upload Image
+uploaded_file = st.file_uploader("Choose an image...", type="jpg")
+
+if uploaded_file is not None:
+    # Open the uploaded image
+    image = Image.open(uploaded_file)
+
+    # Show the uploaded image
+    st.image(image, caption="Uploaded Image.", use_column_width=True)
+
+    # Predict age and gender
+    st.write("Analyzing the image...")
+
+    # Call the prediction function
+    age, gender = predict_age_and_gender(image)
+
+    # Display the results
+    st.write(f"Predicted Age: {age} years")
+    st.write(f"Predicted Gender: {gender}")
 
 # In[ ]:
