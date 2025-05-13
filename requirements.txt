@@ -7,3 +7,7 @@ pygments
 rich
 streamlit
 transformers
+opencv-python-headless
+Pillow
+numpy
+tensorflow
