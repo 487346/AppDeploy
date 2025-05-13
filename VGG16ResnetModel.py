@@ -2,7 +2,6 @@
 # coding: utf-8
 
 # In[ ]:
-
 import streamlit as st
 from PIL import Image
 import cv2
@@ -23,6 +22,9 @@ except Exception as e:
 # Gender labels
 gender_labels = ['Male', 'Female']
 
+# Define age brackets (labels)
+age_brackets = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+']
+
 # Image uploader
 uploaded_file = st.file_uploader('Upload an image', type=['jpg', 'jpeg', 'png'])
 
@@ -41,12 +43,14 @@ if uploaded_file:
         age_prediction = age_model.predict(img_normalized)
         gender_prediction = gender_model.predict(img_normalized)
 
-        # Display results
-        age = int(age_prediction[0][0])
-        gender = gender_labels[np.argmax(gender_prediction)]
+        # Determine age bracket
+        predicted_age = int(age_prediction[0][0])
+        age_bracket = next((bracket for idx, bracket in enumerate(age_brackets) if idx * 10 <= predicted_age < (idx + 1) * 10), '80+')
 
-        st.write(f'**Predicted Age:** {age} years')
-        st.write(f'**Predicted Gender:** {gender}')
+        # Display results
+        st.write(f'**Predicted Age Bracket:** {age_bracket}')
+        st.write(f'**Predicted Gender:** {gender_labels[np.argmax(gender_prediction)]}')
     except Exception as e:
         st.error(f"Error processing the image: {e}")
+
 # In[ ]:
