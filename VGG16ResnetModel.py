@@ -18,6 +18,8 @@ try:
     st.success("Models loaded successfully!")
 except Exception as e:
     st.error(f"Failed to load models: {e}")
+    age_model = None
+    gender_model = None
 
 # Gender labels
 gender_labels = ['Male', 'Female']
@@ -28,10 +30,10 @@ age_brackets = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70
 # Image uploader
 uploaded_file = st.file_uploader('Upload an image', type=['jpg', 'jpeg', 'png'])
 
-if uploaded_file:
+if uploaded_file and age_model and gender_model:
     try:
         image = Image.open(uploaded_file)
-        st.image(image, caption='Uploaded Image', use_column_width=True)
+        st.image(image, caption='Uploaded Image', use_container_width=True)
 
         # Preprocess the image
         img_array = np.array(image)
