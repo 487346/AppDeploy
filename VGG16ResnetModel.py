@@ -58,8 +58,7 @@ if uploaded_file is not None:
     display_image = image.resize((400, 400))
     
     # Display the resized image in Streamlit
-    st.image(display_image, caption='Uploaded Image (5x5 inches).', use_column_width=False)
-    
+    st.image(display_image, caption='Uploaded Image (5x5 inches).', use_container_width=False)
     # Predict using the model
     with torch.no_grad():
         # Apply the necessary transformations and add a batch dimension
