@@ -9,10 +9,12 @@ from PIL import Image
 import torchvision.transforms as transforms
 import os
 
+# Directory to store the model
+MODEL_PATH = "models/DesnetDualHead.pth"
+os.makedirs("models", exist_ok=True)
+
 # Initialize the model
 model = models.densenet121(pretrained=False)
-
-# Add custom layers if needed (e.g., dual head for age and gender)
 model.classifier = torch.nn.Sequential(
     torch.nn.Linear(model.classifier.in_features, 512),
     torch.nn.ReLU(),
@@ -20,20 +22,19 @@ model.classifier = torch.nn.Sequential(
     torch.nn.Linear(512, 2)  # Adjust based on your model's output
 )
 
-# Upload model file
-model_file = st.file_uploader("Upload DesnetDualHead.pth Model", type=["pth"])
-if model_file is not None:
-    with open("DesnetDualHead.pth", "wb") as f:
-        f.write(model_file.read())
-    st.success("Model successfully uploaded and saved locally.")
-
-    # Load the model
-    try:
-        state_dict = torch.load("DesnetDualHead.pth", map_location=torch.device('cpu'))
-        model.load_state_dict(state_dict)
-        st.success("Model loaded successfully.")
-    except Exception as e:
-        st.error(f"Failed to load the model: {e}")
+# Step 1: Check if model already exists locally
+if os.path.exists(MODEL_PATH):
+    st.success("Model found locally. Loading the model...")
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu')))
+else:
+    # Step 2: Ask for upload if not found
+    st.warning("Model not found locally. Please upload the model.")
+    model_file = st.file_uploader("Upload DesnetDualHead.pth Model", type=["pth"])
+    if model_file is not None:
+        with open(MODEL_PATH, "wb") as f:
+            f.write(model_file.read())
+        model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu')))
+        st.success("Model successfully uploaded and loaded.")
 
 # Upload image for prediction
 uploaded_image = st.file_uploader("Upload an Image for Prediction", type=["jpg", "png", "jpeg"])
