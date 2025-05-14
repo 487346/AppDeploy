@@ -25,12 +25,21 @@ model.classifier = torch.nn.Sequential(
     torch.nn.Linear(512, 10)  # 8 age brackets + 2 genders
 )
 
-# Load your trained weights if available
+# Download the model from Dropbox
+url = "https://www.dropbox.com/scl/fi/5m5f288mtry3nxac3e9ls/densenet121_dual_head.pth?rlkey=qjj51rrt76j63qg2ql5rehbnr&st=05r0cqns&dl=1"
+model_path = "densenet121_dual_head.pth"
+
 try:
-    model.load_state_dict(torch.load('model.pth', map_location=torch.device('cpu')))
-    st.success('Model loaded successfully.')
-except FileNotFoundError:
-    st.error('model.pth not found. Please upload the model to the correct path.')
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        with open(model_path, 'wb') as f:
+            f.write(response.content)
+        model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+        st.success('Model loaded successfully.')
+    else:
+        st.error(f"Failed to download model. HTTP Status Code: {response.status_code}")
+except Exception as e:
+    st.error(f"Error during model download: {e}")
 
 model.eval()
 
