@@ -5,7 +5,6 @@
 import streamlit as st
 from PIL import Image
 import torch
-import streamlit as st
 from torchvision import models, transforms
 
 # Define transformations
@@ -37,8 +36,8 @@ model.eval()
 
 # Age and Gender Mapping
 age_bracket_map = {
-    0: '0-2', 1: '3-9', 2: '10-19', 3: '20-29',
-    4: '30-39', 5: '40-49', 6: '50-59', 7: '60+'
+    0: '0-9', 1: '10-19', 2: '20-29', 3: '30-39',
+    4: '40-49', 5: '50-59', 6: '60-69', 7: '70-79', 8: '80+'
 }
 gender_map = {0: 'Male', 1: 'Female'}
 
