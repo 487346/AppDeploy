@@ -68,15 +68,27 @@ if uploaded_file is not None:
         age_prediction = torch.argmax(age_probs, dim=1).item()
         gender_prediction = torch.argmax(gender_probs, dim=1).item()
         
-# Display image and predictions side by side
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.image(display_image, caption='Uploaded Image (5x5 inches)', use_container_width=True)
-
-    with col2:
-        st.subheader('Predictions:')
-        st.write(f'**Gender:** {gender_labels[gender_prediction]}')
-        st.write(f'**Age Bracket:** {age_labels[age_prediction]}')
+    # Apply custom CSS to remove padding/margins and force fill
+        st.markdown("""
+            <style>
+            .full-image > img {
+                object-fit: cover;
+                width: 100%;
+                height: auto;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+    
+        # Display image and predictions side by side
+        col1, col2 = st.columns([2, 1])  
+    
+        with col1:
+            # Use custom class to fill the column space fully
+            st.markdown(f'<div class="full-image">{st.image(image)}</div>', unsafe_allow_html=True)
+    
+        with col2:
+            st.subheader('Predictions:')
+            st.markdown(f"<h3 style='color: #4CAF50;'>Gender:</h3> <p>{gender_labels[gender_prediction]}</p>", unsafe_allow_html=True)
+            st.markdown(f"<h3 style='color: #4CAF50;'>Age Bracket:</h3> <p>{age_labels[age_prediction]}</p>", unsafe_allow_html=True)
 
 # In[ ]:
