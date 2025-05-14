@@ -73,7 +73,7 @@ if uploaded_file is not None:
 
     with col1:
         st.markdown('<div class="center-align">', unsafe_allow_html=True)
-        st.image(image, caption='Uploaded Image (5x5 inches)', use_container_width=True)
+        st.image(image, caption='Uploaded Image (5x5 inches)', use_container_width=False)
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
