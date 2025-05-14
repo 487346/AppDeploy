@@ -62,6 +62,9 @@ if uploaded_file is not None:
     
     # Predict using the model
     with torch.no_grad():
+        # Apply the necessary transformations and add a batch dimension
+        image_tensor = transform(image).unsqueeze(0).to(device)
+        # Forward pass through the model
         age_logits, gender_logits = model(image_tensor)
         age_probs = torch.nn.functional.softmax(age_logits, dim=1)
         gender_probs = torch.nn.functional.softmax(gender_logits, dim=1)
