@@ -54,9 +54,12 @@ uploaded_file = st.file_uploader('Choose an image...', type=['jpg', 'jpeg', 'png
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image.', use_column_width=True)
-    # Preprocess the image
-    image_tensor = transform(image).unsqueeze(0).to(device)
+    # Resize image for display (5 inches = 5 * 100 pixels)
+    display_image = image.resize((500, 500))
+    
+    # Display the resized image in Streamlit
+    st.image(display_image, caption='Uploaded Image (5x5 inches).', use_column_width=False)
+    
     # Predict using the model
     with torch.no_grad():
         age_logits, gender_logits = model(image_tensor)
