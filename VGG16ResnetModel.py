@@ -3,78 +3,61 @@
 
 # In[ ]:
 import streamlit as st
-from PIL import Image
 import torch
-from torchvision import models, transforms
-import requests
+from torchvision import models
+from PIL import Image
+import torchvision.transforms as transforms
+import os
 
-# Define transformations
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-])
+# Initialize the model
+model = models.densenet121(pretrained=False)
 
-# Load the pre-trained DenseNet model
-model = models.densenet121(pretrained=True)
-
-# Modify the classifier for your specific task
+# Add custom layers if needed (e.g., dual head for age and gender)
 model.classifier = torch.nn.Sequential(
     torch.nn.Linear(model.classifier.in_features, 512),
     torch.nn.ReLU(),
     torch.nn.Dropout(0.5),
-    torch.nn.Linear(512, 10)  # 8 age brackets + 2 genders
+    torch.nn.Linear(512, 2)  # Adjust based on your model's output
 )
 
-# Download the model from Dropbox
-url = "https://www.dropbox.com/scl/fi/5m5f288mtry3nxac3e9ls/densenet121_dual_head.pth?rlkey=qjj51rrt76j63qg2ql5rehbnr&st=05r0cqns&dl=1"
-model_path = "densenet121_dual_head.pth"
+# Upload model file
+model_file = st.file_uploader("Upload DesnetDualHead.pth Model", type=["pth"])
+if model_file is not None:
+    with open("DesnetDualHead.pth", "wb") as f:
+        f.write(model_file.read())
+    st.success("Model successfully uploaded and saved locally.")
 
-try:
-    response = requests.get(url, stream=True)
-    if response.status_code == 200:
-        with open(model_path, 'wb') as f:
-            f.write(response.content)
-        model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
-        st.success('Model loaded successfully.')
-    else:
-        st.error(f"Failed to download model. HTTP Status Code: {response.status_code}")
-except Exception as e:
-    st.error(f"Error during model download: {e}")
+    # Load the model
+    try:
+        state_dict = torch.load("DesnetDualHead.pth", map_location=torch.device('cpu'))
+        model.load_state_dict(state_dict)
+        st.success("Model loaded successfully.")
+    except Exception as e:
+        st.error(f"Failed to load the model: {e}")
 
-model.eval()
+# Upload image for prediction
+uploaded_image = st.file_uploader("Upload an Image for Prediction", type=["jpg", "png", "jpeg"])
+if uploaded_image is not None:
+    image = Image.open(uploaded_image)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
 
-# Age and Gender Mapping
-age_bracket_map = {
-    0: '0-9', 1: '10-19', 2: '20-29', 3: '30-39',
-    4: '40-49', 5: '50-59', 6: '60-69', 7: '70-79', 8: '80+'
-}
-gender_map = {0: 'Male', 1: 'Female'}
-
-# Streamlit App
-st.title('Age and Gender Prediction App')
-st.write('Upload an image to predict age and gender.')
-
-# Image Upload
-uploaded_file = st.file_uploader('Choose an image...', type=['jpg', 'png', 'jpeg'])
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image.', use_column_width=True)
-    
     # Preprocess the image
-    image = transform(image).unsqueeze(0)
+    transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+    image = transform(image).unsqueeze(0)  # Add batch dimension
 
-    # Make prediction
+    # Perform prediction
+    model.eval()
     with torch.no_grad():
-        outputs = model(image)
-        
-        # Split the outputs for age and gender
-        age_logits, gender_logits = outputs[:, :8], outputs[:, 8:]
-        
-        age_pred = torch.argmax(age_logits, 1).item()
-        gender_pred = torch.argmax(gender_logits, 1).item()
+        age_logits, gender_logits = model(image)
+        age_pred = torch.argmax(age_logits, dim=1).item()
+        gender_pred = torch.argmax(gender_logits, dim=1).item()
     
-    # Display the predictions
-    st.write(f'**Predicted Age Bracket:** {age_bracket_map[age_pred]}')
-    st.write(f'**Predicted Gender:** {gender_map[gender_pred]}')
+    # Display the results
+    st.write(f"**Predicted Age Group:** {age_pred}")
+    st.write(f"**Predicted Gender:** {'Male' if gender_pred == 1 else 'Female'}")
+
 # In[ ]:
