@@ -67,9 +67,9 @@ if uploaded_file is not None:
         gender_probs = torch.nn.functional.softmax(gender_logits, dim=1)
         age_prediction = torch.argmax(age_probs, dim=1).item()
         gender_prediction = torch.argmax(gender_probs, dim=1).item()
-    # Display results with confidence
+    # Display results
     st.subheader('Predictions:')
-    st.write(f'**Gender:** {gender_labels[gender_prediction]} (Confidence: {gender_probs[0][gender_prediction] * 100:.2f}%)')
-    st.write(f'**Age Bracket:** {age_labels[age_prediction]} (Confidence: {age_probs[0][age_prediction] * 100:.2f}%)')
+    st.write(f'**Gender:** {gender_labels[gender_prediction]}')
+    st.write(f'**Age Bracket:** {age_labels[age_prediction]}')
 
 # In[ ]:
