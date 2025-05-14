@@ -58,7 +58,7 @@ if uploaded_file is not None:
     display_image = image.resize((400, 400))
     
     # Display the resized image in Streamlit
-    st.image(display_image, caption='Uploaded Image (5x5 inches).', use_container_width=False)
+    st.image(display_image, caption='Uploaded Image (4x4 inches).', use_container_width=False)
     # Predict using the model
     with torch.no_grad():
         # Apply the necessary transformations and add a batch dimension
@@ -69,9 +69,16 @@ if uploaded_file is not None:
         gender_probs = torch.nn.functional.softmax(gender_logits, dim=1)
         age_prediction = torch.argmax(age_probs, dim=1).item()
         gender_prediction = torch.argmax(gender_probs, dim=1).item()
-    # Display results
-    st.subheader('Predictions:')
-    st.write(f'**Gender:** {gender_labels[gender_prediction]}')
-    st.write(f'**Age Bracket:** {age_labels[age_prediction]}')
+        
+# Display image and predictions side by side
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.image(display_image, caption='Uploaded Image (5x5 inches)', use_container_width=True)
+
+    with col2:
+        st.subheader('Predictions:')
+        st.write(f'**Gender:** {gender_labels[gender_prediction]}')
+        st.write(f'**Age Bracket:** {age_labels[age_prediction]}')
 
 # In[ ]:
