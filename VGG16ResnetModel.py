@@ -6,6 +6,7 @@ import streamlit as st
 from PIL import Image
 import torch
 from torchvision import models, transforms
+import requests
 
 # Define transformations
 transform = transforms.Compose([
