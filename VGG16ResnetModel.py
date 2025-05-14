@@ -6,6 +6,23 @@ import streamlit as st
 from PIL import Image
 import torch
 from torchvision import transforms
+from torchvision import models
+
+# Load the pre-trained DenseNet model
+model = models.densenet121(pretrained=True)
+
+# Modify the classifier for your specific task
+model.classifier = torch.nn.Sequential(
+    torch.nn.Linear(model.classifier.in_features, 512),
+    torch.nn.ReLU(),
+    torch.nn.Dropout(0.5),
+    torch.nn.Linear(512, 10)  # Adjust the output layer (e.g., 10 classes: 8 age brackets + 2 genders)
+)
+
+# Load your trained weights if available
+model.load_state_dict(torch.load('model.pth'))
+model.eval()
+
 
 # Define transformations
 transform = transforms.Compose([
@@ -42,7 +59,7 @@ if uploaded_file is not None:
 
     # Make prediction
     with torch.no_grad():
-        age_logits, gender_logits = model(image)
+        age_logits, gender_logits = model(image)  # Make sure your forward pass is returning two outputs
         age_pred = torch.argmax(age_logits, 1).item()
         gender_pred = torch.argmax(gender_logits, 1).item()
     
