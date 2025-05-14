@@ -2,8 +2,6 @@
 # coding: utf-8
 
 # In[ ]:
-
-
 import streamlit as st
 from PIL import Image
 import torch
@@ -51,6 +49,7 @@ if uploaded_file is not None:
     # Display the predictions
     st.write(f'**Predicted Age Bracket:** {reverse_age_bracket_map[age_pred]}')
     st.write(f'**Predicted Gender:** {gender_map[gender_pred]}')
+
 
 
 # In[ ]:
