@@ -55,7 +55,7 @@ uploaded_file = st.file_uploader('Choose an image...', type=['jpg', 'jpeg', 'png
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     # Resize image for display (5 inches = 5 * 100 pixels)
-    display_image = image.resize((400, 5400))
+    display_image = image.resize((400, 400))
     
     # Display the resized image in Streamlit
     st.image(display_image, caption='Uploaded Image (5x5 inches).', use_column_width=False)
