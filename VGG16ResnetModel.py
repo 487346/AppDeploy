@@ -67,16 +67,16 @@ if uploaded_file is not None:
         gender_probs = torch.nn.functional.softmax(gender_logits, dim=1)
         age_prediction = torch.argmax(age_probs, dim=1).item()
         gender_prediction = torch.argmax(gender_probs, dim=1).item()
-        
-# Display image and predictions side by side
-    col1, col2 = st.columns([2, 1])  # Wider image column
+
+    # Display image and predictions side by side
+    col1, col2 = st.columns(2)
 
     with col1:
-        st.image(image, caption='Uploaded Image', use_container_width=True)
+        st.image(image, caption='Uploaded Image (5x5 inches)', use_container_width=True)
 
     with col2:
         st.subheader('Predictions:')
-        st.markdown(f"<h3 style='color: #4CAF50;'>Gender:</h3> <p>{gender_labels[gender_prediction]}</p>", unsafe_allow_html=True)
-        st.markdown(f"<h3 style='color: #4CAF50;'>Age Bracket:</h3> <p>{age_labels[age_prediction]}</p>", unsafe_allow_html=True)
+        st.write(f'**Gender:** {gender_labels[gender_prediction]}')
+        st.write(f'**Age Bracket:** {age_labels[age_prediction]}')
 
 # In[ ]:
